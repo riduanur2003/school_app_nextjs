@@ -2,6 +2,7 @@
 'use client';
 
 import { useState } from 'react';
+import { ChangeEvent } from 'react';
 
 export default function StudentRegistrationPage() {
   const [formData, setFormData] = useState({
@@ -32,7 +33,7 @@ export default function StudentRegistrationPage() {
     badgeId: '',
   });
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
