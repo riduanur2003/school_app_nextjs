@@ -1,11 +1,27 @@
-// app/student-registration/page.jsx
+// app/student-registration/page.tsx
 'use client';
 
-import { useState } from 'react';
-import { ChangeEvent } from 'react';
+import { useState, ChangeEvent, FormEvent } from 'react';
+
+interface FormData {
+  studentName: string;
+  gender: string;
+  dateOfBirth: string;
+  address: string;
+  email: string;
+  phoneNumber: string;
+  bloodGroup: string;
+  nationality: string;
+  visaInformation: string;
+  emergencyContact: string;
+  registrationNumber: string;
+  sessionInfo: string;
+  libraryCard: string;
+  badgeId: string;
+}
 
 export default function StudentRegistrationPage() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     // Student Information
     studentName: '',
     gender: '',
@@ -33,16 +49,37 @@ export default function StudentRegistrationPage() {
     badgeId: '',
   });
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  // Fixed: Handle all input types (input, select, textarea)
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: ChangeEvent<HTMLInputElement>) => {
+  // Fixed: FormEvent type for form submission
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('Form submitted:', formData);
     // Add your form submission logic here
     alert('Student information saved successfully!');
+  };
+
+  const handleClear = () => {
+    setFormData({
+      studentName: '',
+      gender: '',
+      dateOfBirth: '',
+      address: '',
+      email: '',
+      phoneNumber: '',
+      bloodGroup: '',
+      nationality: '',
+      visaInformation: '',
+      emergencyContact: '',
+      registrationNumber: '',
+      sessionInfo: '',
+      libraryCard: '',
+      badgeId: '',
+    });
   };
 
   return (
@@ -122,7 +159,7 @@ export default function StudentRegistrationPage() {
                     value={formData.address}
                     onChange={handleChange}
                     required
-                    rows="2"
+                    rows={2}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                     placeholder="Enter complete address"
                   />
@@ -330,24 +367,7 @@ export default function StudentRegistrationPage() {
           <div className="bg-gray-50 px-6 py-4 md:px-8 flex flex-col sm:flex-row gap-3 justify-end">
             <button
               type="button"
-              onClick={() => {
-                setFormData({
-                  studentName: '',
-                  gender: '',
-                  dateOfBirth: '',
-                  address: '',
-                  email: '',
-                  phoneNumber: '',
-                  bloodGroup: '',
-                  nationality: '',
-                  visaInformation: '',
-                  emergencyContact: '',
-                  registrationNumber: '',
-                  sessionInfo: '',
-                  libraryCard: '',
-                  badgeId: '',
-                });
-              }}
+              onClick={handleClear}
               className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
             >
               Clear Form
