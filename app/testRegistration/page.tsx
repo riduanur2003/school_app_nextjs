@@ -38,7 +38,7 @@ export default function StudentRegistrationPage() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     console.log('Form submitted:', formData);
     // Add your form submission logic here
