@@ -3,11 +3,15 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    rememberMe: false,
+  });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -16,27 +20,51 @@ export default function LoginPage() {
     setError('');
     setIsLoading(true);
 
-    // Simulate API call - Replace with your actual authentication logic
     try {
-      // Example validation
-      if (email === 'user@example.com' && password === 'password') {
-        // Store auth state (in real app, use proper auth)
-        localStorage.setItem('isLoggedIn', 'true');
-        router.push('/dashboard'); // Redirect to dashboard after login
-      } else {
-        setError('Invalid email or password');
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed');
       }
-    } catch (err) {
-      setError('An error occurred. Please try again.');
+
+      // Store non-sensitive user data if needed
+      if (formData.rememberMe) {
+        localStorage.setItem('user_email', formData.email);
+      }
+      
+      // Redirect to dashboard
+      router.push('/dashboard');
+      router.refresh(); // Refresh server components
+    } catch (err: any) {
+      setError(err.message);
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
-        {/* Logo/Header */}
+        {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800">Welcome Back</h1>
           <p className="text-gray-600 mt-2">Please sign in to your account</p>
@@ -57,9 +85,10 @@ export default function LoginPage() {
             </label>
             <input
               id="email"
+              name="email"
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={formData.email}
+              onChange={handleInputChange}
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
               placeholder="user@example.com"
@@ -72,9 +101,10 @@ export default function LoginPage() {
             </label>
             <input
               id="password"
+              name="password"
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={formData.password}
+              onChange={handleInputChange}
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
               placeholder="••••••••"
@@ -82,13 +112,19 @@ export default function LoginPage() {
           </div>
 
           <div className="flex items-center justify-between">
-            <label className="flex items-center">
-              <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+            <label className="flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                name="rememberMe"
+                checked={formData.rememberMe}
+                onChange={handleInputChange}
+                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
               <span className="ml-2 text-sm text-gray-600">Remember me</span>
             </label>
-            <a href="#" className="text-sm text-blue-600 hover:text-blue-700">
+            <Link href="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700">
               Forgot password?
-            </a>
+            </Link>
           </div>
 
           <button
@@ -114,15 +150,15 @@ export default function LoginPage() {
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
             Don't have an account?{' '}
-            <a href="#" className="text-blue-600 hover:text-blue-700 font-medium">
+            <Link href="/signup" className="text-blue-600 hover:text-blue-700 font-medium">
               Sign up
-            </a>
+            </Link>
           </p>
         </div>
 
-        {/* Demo credentials hint */}
+        {/* Demo credentials */}
         <div className="mt-4 p-3 bg-gray-50 rounded-lg text-xs text-gray-500 text-center">
-          <p>Demo credentials:</p>
+          <p className="font-medium mb-1">Demo Credentials:</p>
           <p>Email: user@example.com</p>
           <p>Password: password</p>
         </div>
