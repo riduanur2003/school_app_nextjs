@@ -6,6 +6,8 @@ import { registerStudent } from '../actions/studentActions';
 
 
 export default function StudentRegistrationPage() {
+  // sets initail values of the form 
+    // Fixed: FormEvent type for form submission
 
 
   return (

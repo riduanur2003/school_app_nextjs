@@ -1,5 +1,11 @@
 export default async function About(){
 
 
-return <div>about page</div>
+return <>
+
+this is a test page 
+
+</>
+
+
 }
